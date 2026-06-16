@@ -46,12 +46,6 @@ module.exports = grammar({
     document: ($) => repeat($.section),
 
     comment: (_) => seq(COMMENT_PREFIX, LINE_TAIL),
-    httpyac_script: ($) =>
-      seq(
-        token(prec(PREC.HTTPYAC_SCRIPT, seq("{{", /\s*\n/))),
-        repeat(LINE_TAIL),
-        token(prec(PREC.HTTPYAC_SCRIPT, "}}")),
-      ),
 
     metadata: ($) =>
       prec(
@@ -274,6 +268,12 @@ module.exports = grammar({
       ),
     script: (_) =>
       seq(token(prec(1, "{%")), NL, repeat(LINE_TAIL), token(prec(1, "%}"))),
+    httpyac_script: ($) =>
+      seq(
+        token(prec(PREC.HTTPYAC_SCRIPT, seq("{{", /\s*\n/))),
+        repeat(LINE_TAIL),
+        token(prec(PREC.HTTPYAC_SCRIPT, "}}")),
+      ),
 
     res_redirect: ($) =>
       seq(
