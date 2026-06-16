@@ -14,6 +14,7 @@ const PREC = {
   RAW_BODY: 3,
   GRAPHQL_JSON_PREFIX: 4,
   REQ_SEPARATOR: 9,
+  HTTPYAC_SCRIPT: 10,
 };
 
 const WORD_CHAR = /[\p{L}\p{N}]/u;
@@ -45,6 +46,12 @@ module.exports = grammar({
     document: ($) => repeat($.section),
 
     comment: (_) => seq(COMMENT_PREFIX, LINE_TAIL),
+    httpyac_script: ($) =>
+      seq(
+        token(prec(PREC.HTTPYAC_SCRIPT, seq("{{", /\s*\n/))),
+        repeat(LINE_TAIL),
+        token(prec(PREC.HTTPYAC_SCRIPT, "}}")),
+      ),
 
     metadata: ($) =>
       prec(
@@ -88,6 +95,7 @@ module.exports = grammar({
         seq($.metadata, optional($._section_content)),
         seq($.variable_declaration, optional($._section_content)),
         seq($.command, optional($._section_content)),
+        seq($.httpyac_script, optional($._section_content)),
         seq($.pre_request_script, optional($._section_content)),
         field("request", $.request),
         field("response", $.response),
